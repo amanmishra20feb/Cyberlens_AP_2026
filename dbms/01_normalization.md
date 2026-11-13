@@ -17,11 +17,14 @@ The bold columns hold several values in one cell (arrays and JSON). Illustrative
 
 | findings.id | scan_id | user_id | engines | rule_id | cwe | owasp | file | line | severity |
 |---|---|---|---|---|---|---|---|---|---|
-| f1 | s1 | u1 | {semgrep, gitleaks} | gitleaks.generic-api-key | {CWE-798} | {A07} | config.js | 12 | critical |
+| f1 | s1 | u1 | {semgrep, gitleaks} | cyberlens.hardcoded-secret | {CWE-798} | {A07} | config.js | 12 | critical |
+
+Semgrep and Gitleaks both reported this line, so `merge()` made one finding: it keeps the first engine's rule (Semgrep's
+`cyberlens.hardcoded-secret`) and the worst severity (Gitleaks's critical).
 
 | scans.id | user_id | counts | engines | files |
 |---|---|---|---|---|
-| s1 | u1 | {"critical":1,"high":0,"medium":2,"low":0} | [{"name":"semgrep","ok":true,"count":3,"ms":41200}, {"name":"gitleaks","ok":true,"count":1,"ms":2300}, {"name":"osv","ok":false,"error":"timed out","ms":120000}] | [{"path":"config.js","loc":40}, {"path":"src/app.js","loc":120}] |
+| s1 | u1 | {"critical":1,"high":0,"medium":2,"low":0} | [{"name":"semgrep","ok":true,"count":3,"ms":41200}, {"name":"gitleaks","ok":true,"count":1,"ms":2300}, {"name":"osv","ok":false,"error":"timed out after 120 s","ms":120000}] | [{"path":"config.js","loc":40}, {"path":"src/app.js","loc":120}] |
 
 A successful engine entry has no `error` key, and a failed one has no `count` key (see `runEngine` in `scan.js`).
 
@@ -71,7 +74,7 @@ of `file|line|first CWE`, or of `file|rule_id|title` when the finding has no lin
 | F1 | id -> every other column |
 | F2 | (scan_id, fingerprint) -> every other column |
 | F3 | **scan_id -> user_id** (the owner of a finding is the owner of its scan) |
-| F4 | **fingerprint -> file, line** (the same fingerprint always means the same file and line, because it is a hash of them; many scans can share one fingerprint) |
+| F4 | **fingerprint -> file, line** (the same fingerprint always means the same file and line, because it is a hash of them; for a finding with a line it also fixes the first CWE, and for one without a line it also fixes `rule_id` and `title`; many scans can share one fingerprint) |
 
 F3 and F4 are both **partial dependencies** on the composite candidate key (scan_id, fingerprint): `user_id` depends
 on `scan_id` alone, and `file` and `line` depend on `fingerprint` alone. So `findings` is not in 2NF. Fixes:
@@ -132,8 +135,10 @@ Relationships: user 1:N scans; scan 1:N findings; scan 1:N scan_engines; scan 1:
 finding_engines, finding_cwe and finding_owasp.
 
 No data about a scan or a finding is lost: joining the child tables back to `findings` and `scans` rebuilds every array
-and JSON value (`array_agg` or `json_agg`), and `scans.counts` is `count(*)` of the scan's findings grouped by severity.
-The only value not stored is `fingerprint`, which is computed when a scan is saved.
+and JSON value (`array_agg` or `json_agg`) as a set, and `scans.counts` is `count(*)` of the scan's findings grouped by
+severity. The order of `cwe` is not kept, because `finding_cwe` is a set; the order does not matter for `engines` or `owasp`.
+The only value not stored is `fingerprint`, which is computed when a scan is saved. It uses the first CWE, so it could not
+be rebuilt exactly from the 3NF design, which is one more reason to compute it at save time.
 
 ## 6. Where the running app differs from the 3NF design, and why
 
