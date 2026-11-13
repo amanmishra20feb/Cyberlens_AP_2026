@@ -11,7 +11,7 @@ Team T0028, Section B.
 
 | Role | Name | Enrollment No. | GitHub username |
 |------|------|----------------|-----------------|
-| Group Lead | Aman Mishra | | |
+| Group Lead | Aman Mishra | 2501010050 | amanmishra20feb |
 | Member 2 | Shivansh Pandey | 2501010698 | pandeyshivansh-tech |
 | Member 3 | Abhinav Tayal | | |
 | Member 4 | Prashant | | |
