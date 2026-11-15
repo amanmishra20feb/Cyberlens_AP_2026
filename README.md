@@ -13,7 +13,7 @@ Team T0028, Section B.
 |------|------|----------------|-----------------|
 | Group Lead | Aman Mishra | 2501010050 | amanmishra20feb |
 | Member 2 | Shivansh Pandey | 2501010698 | pandeyshivansh-tech |
-| Member 3 | Abhinav Tayal | 2501010016 | | abhinav560
+| Member 3 | Abhinav Tayal | 2501010016 | | abhinav560 |
 | Member 4 | Prashant | | |
 
 ## Contents
