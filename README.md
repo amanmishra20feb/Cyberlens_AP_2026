@@ -21,5 +21,7 @@ Team T0028, Section B.
 | File | What it is |
 |------|------------|
 | `dbms/01_normalization.md` | The app's data taken through 1NF, 2NF and 3NF, with BCNF checked, and where the running schema deliberately differs |
+| `dbms/02_er_diagram.png` | ER diagram of the three real tables (users, scans, findings); source in `dbms/02_er_diagram.mmd` |
+| `dbms/03_schema.sql` | `CREATE TABLE` statements and indexes of the running schema, runnable on PostgreSQL |
 
 More files will be added to `dbms/` as the project goes on.

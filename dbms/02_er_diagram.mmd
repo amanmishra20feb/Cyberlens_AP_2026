@@ -1,0 +1,52 @@
+erDiagram
+    users ||--o{ scans : "starts"
+    users ||--o{ findings : "owns"
+    scans ||--o{ findings : "contains"
+
+    users {
+        uuid id PK
+        text email UK "NOT NULL"
+        text name "1 to 80 characters"
+        text password_hash
+        timestamptz created_at
+    }
+
+    scans {
+        uuid id PK
+        uuid user_id FK "NOT NULL, ON DELETE CASCADE"
+        text repo_url
+        text branch
+        text commit
+        text status "queued, cloning, scanning, saving, done, failed, cancelled"
+        text error
+        jsonb counts "findings per severity"
+        jsonb engines "one entry per engine"
+        jsonb files "Repo Map: path and loc"
+        integer file_count
+        timestamptz started_at
+        timestamptz finished_at
+        timestamptz created_at
+    }
+
+    findings {
+        uuid id PK
+        uuid scan_id FK "NOT NULL, ON DELETE CASCADE"
+        uuid user_id FK "NOT NULL, ON DELETE CASCADE"
+        text_array engines
+        text rule_id
+        text title
+        text message
+        text severity "critical, high, medium, low"
+        text_array cwe
+        text_array owasp
+        text file
+        integer line
+        integer end_line
+        text snippet
+        integer snippet_line
+        text fingerprint "UNIQUE with scan_id"
+        text status "open, fixed, ignored"
+        text ignore_reason "false_positive, acceptable_risk, no_time"
+        timestamptz created_at
+        timestamptz updated_at
+    }
